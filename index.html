@@ -55,7 +55,7 @@
       btn.disabled = true;
       btn.textContent = 'Sending...';
       try {
-        const { error } = await supabase.auth.signInWithOtp({
+        const { error } = await sb.auth.signInWithOtp({
           email,
           options: { emailRedirectTo: window.location.origin + '/dashboard.html' }
         });

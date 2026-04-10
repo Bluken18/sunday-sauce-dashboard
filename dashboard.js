@@ -32,7 +32,7 @@ let sortDir = 'desc';
 
 async function loadAllData() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('session_analytics')
       .select('*')
       .order('created_at', { ascending: false })
@@ -165,7 +165,7 @@ function showSection(id, el) {
 }
 
 async function signOut() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   window.location.href = 'index.html';
 }
 
