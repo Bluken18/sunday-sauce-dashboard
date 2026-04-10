@@ -4,67 +4,104 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sunday Sauce &mdash; Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="dashboard-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <h1>Sunday Sauce</h1>
-        <span>Dashboard</span>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="#overview" class="active" onclick="showSection('overview')">Overview</a>
-        <a href="#sessions" onclick="showSection('sessions')">Sessions</a>
-        <a href="#costs" onclick="showSection('costs')">Cost Breakdown</a>
-        <a href="#whos-cooking" onclick="showSection('whos-cooking')">Who's Cooking</a>
-        <a href="#errors" onclick="showSection('errors')">Errors &amp; Issues</a>
-      </nav>
-      <div class="sidebar-footer">
-        <button onclick="signOut()">Sign out</button>
-      </div>
-    </aside>
+<div class="shell">
 
-    <!-- Main Content -->
-    <main class="main-content">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-name">Sunday Sauce</div>
+      <div class="brand-sub">Admin Dashboard</div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showSection('overview',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".8"/><rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".5"/><rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".5"/><rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".5"/></svg>
+        Overview
+      </button>
+      <button class="nav-item" onclick="showSection('sessions',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" rx="1" fill="currentColor"/><rect x="1" y="7" width="14" height="2" rx="1" fill="currentColor" opacity=".5"/><rect x="1" y="11" width="9" height="2" rx="1" fill="currentColor" opacity=".3"/></svg>
+        Sessions
+      </button>
+      <button class="nav-item" onclick="showSection('revenue',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M1 12 L4 8 L7 9 L10 4 L13 6 L15 2" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/></svg>
+        Revenue &amp; Profit
+      </button>
+      <button class="nav-item" onclick="showSection('costs',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M5 5h4.5a2 2 0 010 4H5m0 0h5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+        Cost Breakdown
+      </button>
+      <button class="nav-item" onclick="showSection('whos-cooking',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="3" fill="currentColor" opacity=".8"/><circle cx="11" cy="5" r="3" fill="currentColor" opacity=".5"/><path d="M1 14c0-2.2 1.8-4 4-4s4 1.8 4 4" fill="currentColor" opacity=".8"/></svg>
+        Who's Cooking
+      </button>
+      <button class="nav-item" onclick="showSection('errors',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><rect x="7.25" y="4" width="1.5" height="5" rx=".75" fill="currentColor"/><circle cx="8" cy="11.5" r=".8" fill="currentColor"/></svg>
+        Errors &amp; Issues
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="live-indicator"><span class="pulse"></span> Live &middot; refreshes 5m</span>
+      <button class="signout-btn" onclick="signOut()">Sign out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <header class="topbar">
+      <h2 class="topbar-title" id="topbar-title">Overview</h2>
+      <div class="topbar-actions">
+        <div class="range-toggle" id="range-toggle">
+          <button data-range="7d">7d</button>
+          <button data-range="30d" class="active">30d</button>
+          <button data-range="90d">90d</button>
+          <button data-range="all">All</button>
+        </div>
+        <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+      </div>
+    </header>
+
+    <div class="content-scroll">
 
       <!-- OVERVIEW -->
-      <div id="overview" class="section active">
-        <h2 class="section-title">Overview</h2>
-        <div id="overview-stats" class="stat-grid">
-          <div class="stat-card skeleton skeleton-card"></div>
-          <div class="stat-card skeleton skeleton-card"></div>
-          <div class="stat-card skeleton skeleton-card"></div>
-          <div class="stat-card skeleton skeleton-card"></div>
-          <div class="stat-card skeleton skeleton-card"></div>
-          <div class="stat-card skeleton skeleton-card"></div>
-          <div class="stat-card skeleton skeleton-card"></div>
+      <div id="sec-overview" class="section active">
+        <div id="overview-stats" class="stat-grid-5">
           <div class="stat-card skeleton skeleton-card"></div>
           <div class="stat-card skeleton skeleton-card"></div>
           <div class="stat-card skeleton skeleton-card"></div>
           <div class="stat-card skeleton skeleton-card"></div>
           <div class="stat-card skeleton skeleton-card"></div>
         </div>
+        <div id="overview-legend" class="type-legend"></div>
+        <div class="section-label">Revenue vs. cost &mdash; daily</div>
+        <div class="card">
+          <div class="legend">
+            <span class="leg-item"><span class="leg-dot" style="background:#2d7a3a"></span>Revenue</span>
+            <span class="leg-item"><span class="leg-dot" style="background:#c0392b"></span>Cost</span>
+            <span class="leg-item"><span class="leg-dot" style="background:#a5d6a7"></span>Profit</span>
+          </div>
+          <div style="position:relative;height:180px"><canvas id="chart-overview"></canvas></div>
+        </div>
       </div>
 
       <!-- SESSIONS -->
-      <div id="sessions" class="section">
-        <h2 class="section-title">Sessions</h2>
-        <div class="table-controls">
-          <input type="date" id="filter-date-from" title="From date">
-          <input type="date" id="filter-date-to" title="To date">
-          <select id="filter-recipe"><option value="">All Recipes</option></select>
-          <select id="filter-type">
-            <option value="">All Types</option>
-            <option value="free">Free</option>
-            <option value="paid">Paid</option>
-            <option value="offer_code">Offer Code</option>
+      <div id="sec-sessions" class="section">
+        <div class="filter-row">
+          <span class="filter-label">Filter:</span>
+          <select class="filter-select" id="filter-type" onchange="renderAll()">
+            <option value="">All types</option>
+            <option value="ss_session_single">Single ($4.99)</option>
+            <option value="ss_session_4pack">4-pack ($3.99)</option>
+            <option value="ss_session_free">Free</option>
+            <option value="ss_session_promo">Promo code</option>
           </select>
-          <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+          <select class="filter-select" id="filter-recipe" onchange="renderAll()">
+            <option value="">All recipes</option>
+          </select>
+          <select class="filter-select" id="filter-character" onchange="renderAll()">
+            <option value="">All characters</option>
+          </select>
         </div>
         <div id="sessions-table-wrapper">
           <div class="skeleton skeleton-table"></div>
@@ -72,91 +109,113 @@
         <div id="sessions-pagination" class="pagination"></div>
       </div>
 
-      <!-- COST BREAKDOWN -->
-      <div id="costs" class="section">
-        <h2 class="section-title">Cost Breakdown</h2>
-        <div class="chart-grid">
-          <div class="chart-card">
-            <h3>Daily Total Cost (30 days)</h3>
-            <canvas id="chart-daily-cost"></canvas>
+      <!-- REVENUE & PROFIT -->
+      <div id="sec-revenue" class="section">
+        <div id="revenue-stats" class="stat-grid">
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+        </div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Revenue by purchase type</span><span class="card-meta" id="revenue-chart-meta"></span></div>
+            <div class="legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#1565c0"></span>Single ($4.99)</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#6a1b9a"></span>4-pack ($3.99)</span>
+            </div>
+            <div style="position:relative;height:200px"><canvas id="chart-revenue-by-type"></canvas></div>
           </div>
-          <div class="chart-card">
-            <h3>Cost by Component (daily)</h3>
-            <canvas id="chart-stacked-cost"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3>Overall Cost Distribution</h3>
-            <canvas id="chart-cost-pie"></canvas>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Purchase type breakdown</span></div>
+            <div style="position:relative;height:160px"><canvas id="chart-type-pie"></canvas></div>
+            <div id="revenue-avg-table" class="cost-summary"></div>
           </div>
         </div>
-
-        <h3 style="font-family:var(--font-heading);font-size:20px;margin-bottom:16px;">Month-over-Month</h3>
-        <table class="cost-comparison" id="cost-comparison-table">
-          <thead>
-            <tr><th>Component</th><th>This Month</th><th>Last Month</th><th>Change</th></tr>
-          </thead>
-          <tbody id="cost-comparison-body"></tbody>
-        </table>
-
-        <div class="margin-calculator">
-          <h3>Margin Calculator</h3>
-          <div class="margin-inputs">
-            <div>
-              <label>Session Price ($)</label>
-              <input type="number" id="margin-price" value="4.99" step="0.01" oninput="recalcMargin()">
+        <div class="margin-calc">
+          <div class="mc-title">Per-product margin calculator</div>
+          <div class="mc-grid">
+            <div class="mc-input-group">
+              <label>Purchase type</label>
+              <select id="mc-type" onchange="calcMargin()">
+                <option value="4.99">Single session &mdash; $4.99</option>
+                <option value="3.99">4-pack &mdash; $3.99/session</option>
+                <option value="0">Free / promo code</option>
+              </select>
             </div>
-            <div>
-              <label>Apple Commission (%)</label>
-              <input type="number" id="margin-commission" value="15" step="1" oninput="recalcMargin()">
-            </div>
+            <div class="mc-input-group"><label>Apple commission %</label><input type="number" id="mc-apple" value="15" step="1" oninput="calcMargin()"></div>
+            <div class="mc-input-group"><label>Avg cost per session ($)</label><input type="number" id="mc-cost" value="0.09" step="0.01" oninput="calcMargin()"></div>
           </div>
-          <div id="margin-results" class="margin-results"></div>
+          <div class="mc-results" id="mc-results"></div>
+        </div>
+      </div>
+
+      <!-- COST BREAKDOWN -->
+      <div id="sec-costs" class="section">
+        <div id="costs-stats" class="stat-grid">
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+        </div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Cost by component &mdash; daily</span><span class="card-meta" id="cost-chart-meta"></span></div>
+            <div class="legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#c0392b"></span>ElevenLabs</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#1a1a1a"></span>Claude</span>
+              <span class="leg-item"><span class="leg-dot" style="background:#9e9e9e"></span>Deepgram</span>
+            </div>
+            <div style="position:relative;height:200px"><canvas id="chart-cost-stacked"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Cost distribution</span></div>
+            <div id="cost-pie-legend" class="legend"></div>
+            <div style="position:relative;height:180px"><canvas id="chart-cost-pie"></canvas></div>
+          </div>
         </div>
       </div>
 
       <!-- WHO'S COOKING -->
-      <div id="whos-cooking" class="section">
-        <h2 class="section-title">Who's Cooking</h2>
-        <div class="stat-grid" id="whos-cooking-stats"></div>
-        <div class="chart-grid">
-          <div class="chart-card">
-            <h3>Sessions per Recipe (Top 10)</h3>
-            <canvas id="chart-recipe-bar"></canvas>
+      <div id="sec-whos-cooking" class="section">
+        <div id="whos-stats" class="stat-grid">
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+        </div>
+        <div class="chart-row">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Sessions by recipe</span></div>
+            <div style="position:relative;height:220px"><canvas id="chart-recipe-bar"></canvas></div>
           </div>
-          <div class="chart-card">
-            <h3>Sessions per Character</h3>
-            <canvas id="chart-character-bar"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3>Sessions per Cuisine</h3>
-            <canvas id="chart-cuisine-bar"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3>Crew Size Distribution</h3>
-            <canvas id="chart-crew-pie"></canvas>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Sessions by character</span></div>
+            <div style="position:relative;height:220px"><canvas id="chart-character-bar"></canvas></div>
           </div>
         </div>
-        <h3 style="font-family:var(--font-heading);font-size:20px;margin:24px 0 16px;">Popular Pairings</h3>
-        <div id="pairings-table-wrapper"></div>
       </div>
 
-      <!-- ERRORS -->
-      <div id="errors" class="section">
-        <h2 class="section-title">Errors &amp; Issues</h2>
-        <div class="table-controls">
-          <select id="filter-error-type"><option value="">All Error Types</option></select>
+      <!-- ERRORS & ISSUES -->
+      <div id="sec-errors" class="section">
+        <div id="errors-stats" class="stat-grid">
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
         </div>
         <div id="errors-table-wrapper">
           <div class="skeleton skeleton-table"></div>
         </div>
       </div>
 
-    </main>
+    </div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
-  <script src="auth.js"></script>
-  <script src="dashboard.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="auth.js"></script>
+<script src="dashboard.js"></script>
 </body>
 </html>
