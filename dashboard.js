@@ -12,10 +12,10 @@ const charts = {};
 // Pricing (mirrors session_tracker.py)
 const APPLE_COMMISSION = 0.15;
 const PRICES = {
-  ss_session_single: 4.99,
-  ss_session_4pack: 3.99,
-  ss_session_free: 0.00,
-  ss_session_promo: 0.00,
+  'com.sundaysauce.session.one': 4.99,
+  'com.sundaysauce.session.four': 3.99,
+  'ss_session_free': 0.00,
+  'ss_session_promo': 0.00,
 };
 
 // Sort state for sessions table
@@ -76,12 +76,12 @@ function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete chart
 
 function getType(s) {
   const pid = s.product_id;
-  if (pid === 'ss_session_single') return 'single';
-  if (pid === 'ss_session_4pack') return '4pack';
+  if (pid === 'com.sundaysauce.session.one') return 'single';
+  if (pid === 'com.sundaysauce.session.four') return '4pack';
   if (pid === 'ss_session_promo') return 'promo';
-  // Legacy: map session_type for rows without product_id
+  // Fallback: use session_type for rows without product_id
   if (!pid) {
-    if (s.session_type === 'paid') return 'single';
+    if (s.session_type === 'paid') return 'single';  // best guess
     if (s.session_type === 'offer_code') return 'promo';
   }
   return 'free';
