@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunday Sauce &mdash; Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h1>Sunday Sauce</h1>
+        <span>Dashboard</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#overview" class="active" onclick="showSection('overview')">Overview</a>
+        <a href="#sessions" onclick="showSection('sessions')">Sessions</a>
+        <a href="#costs" onclick="showSection('costs')">Cost Breakdown</a>
+        <a href="#whos-cooking" onclick="showSection('whos-cooking')">Who's Cooking</a>
+        <a href="#errors" onclick="showSection('errors')">Errors &amp; Issues</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button onclick="signOut()">Sign out</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- OVERVIEW -->
+      <div id="overview" class="section active">
+        <h2 class="section-title">Overview</h2>
+        <div id="overview-stats" class="stat-grid">
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+          <div class="stat-card skeleton skeleton-card"></div>
+        </div>
+      </div>
+
+      <!-- SESSIONS -->
+      <div id="sessions" class="section">
+        <h2 class="section-title">Sessions</h2>
+        <div class="table-controls">
+          <input type="date" id="filter-date-from" title="From date">
+          <input type="date" id="filter-date-to" title="To date">
+          <select id="filter-recipe"><option value="">All Recipes</option></select>
+          <select id="filter-type">
+            <option value="">All Types</option>
+            <option value="free">Free</option>
+            <option value="paid">Paid</option>
+            <option value="offer_code">Offer Code</option>
+          </select>
+          <button class="export-btn" onclick="exportCSV()">Export CSV</button>
+        </div>
+        <div id="sessions-table-wrapper">
+          <div class="skeleton skeleton-table"></div>
+        </div>
+        <div id="sessions-pagination" class="pagination"></div>
+      </div>
+
+      <!-- COST BREAKDOWN -->
+      <div id="costs" class="section">
+        <h2 class="section-title">Cost Breakdown</h2>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>Daily Total Cost (30 days)</h3>
+            <canvas id="chart-daily-cost"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Cost by Component (daily)</h3>
+            <canvas id="chart-stacked-cost"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Overall Cost Distribution</h3>
+            <canvas id="chart-cost-pie"></canvas>
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-heading);font-size:20px;margin-bottom:16px;">Month-over-Month</h3>
+        <table class="cost-comparison" id="cost-comparison-table">
+          <thead>
+            <tr><th>Component</th><th>This Month</th><th>Last Month</th><th>Change</th></tr>
+          </thead>
+          <tbody id="cost-comparison-body"></tbody>
+        </table>
+
+        <div class="margin-calculator">
+          <h3>Margin Calculator</h3>
+          <div class="margin-inputs">
+            <div>
+              <label>Session Price ($)</label>
+              <input type="number" id="margin-price" value="4.99" step="0.01" oninput="recalcMargin()">
+            </div>
+            <div>
+              <label>Apple Commission (%)</label>
+              <input type="number" id="margin-commission" value="15" step="1" oninput="recalcMargin()">
+            </div>
+          </div>
+          <div id="margin-results" class="margin-results"></div>
+        </div>
+      </div>
+
+      <!-- WHO'S COOKING -->
+      <div id="whos-cooking" class="section">
+        <h2 class="section-title">Who's Cooking</h2>
+        <div class="stat-grid" id="whos-cooking-stats"></div>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h3>Sessions per Recipe (Top 10)</h3>
+            <canvas id="chart-recipe-bar"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Sessions per Character</h3>
+            <canvas id="chart-character-bar"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Sessions per Cuisine</h3>
+            <canvas id="chart-cuisine-bar"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Crew Size Distribution</h3>
+            <canvas id="chart-crew-pie"></canvas>
+          </div>
+        </div>
+        <h3 style="font-family:var(--font-heading);font-size:20px;margin:24px 0 16px;">Popular Pairings</h3>
+        <div id="pairings-table-wrapper"></div>
+      </div>
+
+      <!-- ERRORS -->
+      <div id="errors" class="section">
+        <h2 class="section-title">Errors &amp; Issues</h2>
+        <div class="table-controls">
+          <select id="filter-error-type"><option value="">All Error Types</option></select>
+        </div>
+        <div id="errors-table-wrapper">
+          <div class="skeleton skeleton-table"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src="auth.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
