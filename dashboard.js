@@ -75,6 +75,7 @@ function emptyState(msg) {
 function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
 function getType(s) {
+  if (s.is_sandbox) return 'sandbox';
   const pid = s.product_id;
   if (pid === 'com.sundaysauce.session.one') return 'single';
   if (pid === 'com.sundaysauce.session.four') return '4pack';
@@ -87,7 +88,10 @@ function getType(s) {
   return 'free';
 }
 
+function isPaid(s) { const t = getType(s); return t === 'single' || t === '4pack'; }
+
 const TYPE_META = {
+  sandbox: { label: 'Sandbox', cls: 'b-sandbox', color: '#ff9800' },
   single: { label: 'Single ($4.99)', cls: 'b-single', color: '#1565c0' },
   '4pack': { label: '4-pack ($3.99)', cls: 'b-4pack', color: '#6a1b9a' },
   free: { label: 'Free', cls: 'b-free', color: '#9e9e9e' },
@@ -208,12 +212,14 @@ function renderOverview(data) {
     return;
   }
 
-  const totalRev = data.reduce((a, s) => a + grossRev(s), 0);
-  const totalNet = data.reduce((a, s) => a + netRev(s), 0);
-  const totalCost = data.reduce((a, s) => a + cost(s), 0);
+  // Exclude sandbox from revenue/profit calculations
+  const prod = data.filter(s => !s.is_sandbox);
+  const totalRev = prod.reduce((a, s) => a + grossRev(s), 0);
+  const totalNet = prod.reduce((a, s) => a + netRev(s), 0);
+  const totalCost = prod.reduce((a, s) => a + cost(s), 0);
   const totalProfit = totalNet - totalCost;
   const marginPct = totalNet > 0 ? ((totalProfit / totalNet) * 100).toFixed(0) : '0';
-  const paidSessions = data.filter(s => grossRev(s) > 0);
+  const paidSessions = prod.filter(s => isPaid(s));
   const avgProfit = paidSessions.length > 0 ? (totalProfit / paidSessions.length) : 0;
   const completedPct = data.length > 0 ? ((data.filter(s => s.completed).length / data.length) * 100).toFixed(0) : '0';
 
@@ -239,14 +245,17 @@ function renderOverview(data) {
   `;
 
   // Type legend
-  const counts = { single: 0, '4pack': 0, free: 0, promo: 0 };
-  const revByType = { single: 0, '4pack': 0, free: 0, promo: 0 };
-  data.forEach(s => { const t = getType(s); counts[t]++; revByType[t] += grossRev(s); });
-  document.getElementById('overview-legend').innerHTML = `
-    <div class="type-pill"><span class="dot" style="background:#1565c0"></span><strong>Single</strong> $4.99 &middot; ${counts.single} sessions &middot; ${fmt$(revByType.single)} gross</div>
-    <div class="type-pill"><span class="dot" style="background:#6a1b9a"></span><strong>4-pack</strong> $3.99/session &middot; ${counts['4pack']} sessions &middot; ${fmt$(revByType['4pack'])} gross</div>
-    <div class="type-pill"><span class="dot" style="background:#9e9e9e"></span><strong>Free / promo</strong> $0.00 &middot; ${counts.free + counts.promo} sessions</div>
-  `;
+  const counts = { sandbox: 0, single: 0, '4pack': 0, free: 0, promo: 0 };
+  const revByType = { single: 0, '4pack': 0 };
+  data.forEach(s => { const t = getType(s); counts[t] = (counts[t] || 0) + 1; if (isPaid(s)) revByType[t] += grossRev(s); });
+  let legendHtml = `
+    <div class="type-pill"><span class="dot" style="background:#1565c0"></span><strong>Single</strong> $4.99 &middot; ${counts.single} sessions &middot; ${fmt$(revByType.single || 0)} gross</div>
+    <div class="type-pill"><span class="dot" style="background:#6a1b9a"></span><strong>4-pack</strong> $3.99/session &middot; ${counts['4pack']} sessions &middot; ${fmt$(revByType['4pack'] || 0)} gross</div>
+    <div class="type-pill"><span class="dot" style="background:#9e9e9e"></span><strong>Free / promo</strong> $0.00 &middot; ${counts.free + counts.promo} sessions</div>`;
+  if (counts.sandbox > 0) {
+    legendHtml += `<div class="type-pill"><span class="dot" style="background:#ff9800"></span><strong>Sandbox</strong> &middot; ${counts.sandbox} sessions &middot; excluded from revenue</div>`;
+  }
+  document.getElementById('overview-legend').innerHTML = legendHtml;
 
   // Revenue vs cost chart
   const dayMap = buildDailyMap(data);
@@ -374,10 +383,12 @@ function renderRevenue(data) {
     return;
   }
 
-  const gross = data.reduce((a, s) => a + grossRev(s), 0);
-  const appleCut = data.reduce((a, s) => a + Number(s.apple_cut_usd || 0), 0);
+  // Exclude sandbox from revenue calculations
+  const prod = data.filter(s => !s.is_sandbox);
+  const gross = prod.reduce((a, s) => a + grossRev(s), 0);
+  const appleCut = prod.reduce((a, s) => a + Number(s.apple_cut_usd || 0), 0);
   const net = gross - appleCut;
-  const totalCostVal = data.reduce((a, s) => a + cost(s), 0);
+  const totalCostVal = prod.reduce((a, s) => a + cost(s), 0);
   const netProfit = net - totalCostVal;
 
   el.innerHTML = `
