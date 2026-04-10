@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sunday Sauce &mdash; Admin</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="login-page">
@@ -17,14 +14,10 @@
     </div>
 
     <div id="login-form" class="login-card">
-      <p class="login-instruction">Sign in with your admin email to continue.</p>
-      <input type="email" id="email-input" placeholder="you@example.com" autocomplete="email" />
-      <button id="send-link-btn" onclick="sendMagicLink()">Send login link</button>
-    </div>
-
-    <div id="login-success" class="login-card" style="display:none;">
-      <p class="login-success-msg">Check your email for the login link.</p>
-      <p class="login-sub">You can close this tab &mdash; the link will bring you back.</p>
+      <p class="login-instruction">Sign in with your admin account.</p>
+      <input type="email" id="email-input" placeholder="Email" autocomplete="email" />
+      <input type="password" id="password-input" placeholder="Password" autocomplete="current-password" style="margin-bottom:12px" />
+      <button id="login-btn" onclick="signIn()">Sign in</button>
     </div>
 
     <div id="login-error" class="login-card" style="display:none;">
@@ -40,37 +33,37 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="auth.js"></script>
   <script>
-    // On load: if already authenticated, redirect to dashboard
     (async () => {
       const ok = await checkSession();
-      if (ok) {
-        window.location.href = 'dashboard.html';
-      }
+      if (ok) window.location.href = 'dashboard.html';
     })();
 
-    async function sendMagicLink() {
+    async function signIn() {
       const email = document.getElementById('email-input').value.trim();
-      if (!email) return;
-      const btn = document.getElementById('send-link-btn');
+      const password = document.getElementById('password-input').value;
+      if (!email || !password) return;
+      const btn = document.getElementById('login-btn');
       btn.disabled = true;
-      btn.textContent = 'Sending...';
+      btn.textContent = 'Signing in...';
       try {
-        const { error } = await sb.auth.signInWithOtp({
-          email,
-          options: { emailRedirectTo: window.location.origin + '/dashboard.html' }
-        });
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('login-success').style.display = 'block';
+        if (data.user.id !== ADMIN_USER_ID) {
+          await sb.auth.signOut();
+          document.getElementById('login-form').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+          return;
+        }
+        window.location.href = 'dashboard.html';
       } catch (e) {
         document.getElementById('login-form').style.display = 'none';
-        document.getElementById('error-msg').textContent = e.message || 'Failed to send link.';
+        document.getElementById('error-msg').textContent = e.message || 'Sign in failed.';
         document.getElementById('login-error').style.display = 'block';
       }
     }
 
-    document.getElementById('email-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMagicLink();
+    document.getElementById('password-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') signIn();
     });
   </script>
 </body>
